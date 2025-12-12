@@ -18,7 +18,7 @@ def child_node(problem, parent_node, action, heuristic):
     return Node(new_state, parent_node, g, h)
 
 # allows modular use of A* with different problems and heuristics
-def a_star(problem, heuristic, verbose=False):
+def a_star(problem, heuristic, verbose=False, iteration_limit=500000):
     start_node = Node(problem.initial_state, g=0, h=heuristic(problem.initial_state))
     frontier = []
     heapq.heappush(frontier, start_node)
@@ -27,8 +27,17 @@ def a_star(problem, heuristic, verbose=False):
     nodes_generated = 1  # starting node
     nodes_expanded = 0
     max_frontier_size = 1
-
+    i = 0
     while frontier:
+        if i >= iteration_limit:
+            print(" - Iteration limit reached, stopping search.")
+            return None, {
+                    'nodes_generated': nodes_generated,
+                    'nodes_expanded': nodes_expanded,
+                    'max_frontier_size': max_frontier_size
+                }
+
+        i+=1
         node = heapq.heappop(frontier)
         nodes_expanded += 1
 

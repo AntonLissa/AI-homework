@@ -110,30 +110,39 @@ def pretty_print(grid):
                 else: print(".", end=" ")
 
 
+def check_solution(grid):
+    sudoku = Sudoku(grid)
+    return sudoku.is_goal(grid)
 
+import requests
 
-import os
-import sys
+def sudoku_parser(line):
+    grid = []
+    for i in range(9):
+        row = []
+        for j in range(9):
+            char = line[i*9 + j]
+            if char == '.':
+                row.append(0)
+            else:
+                row.append(int(char))
+        grid.append(row)
+    return grid
 
-def main():
-    venv_path = os.environ.get("VIRTUAL_ENV")
-    
-    if venv_path:
-        print(f"Sei in un virtual environment attivo!")
-        print(f"Percorso del virtualenv: {venv_path}")
-        activate_path = os.path.join(venv_path, "Scripts", "activate") if os.name == "nt" else os.path.join(venv_path, "bin", "activate")
-        print(f"Per attivarlo da terminale (di nuovo) usa:\n{activate_path}")
-    else:
-        print("Non sembra esserci un virtual environment attivo.")
-        # cerca una cartella 'venv' nella directory corrente
-        current_dir = os.getcwd()
-        possible_venv = os.path.join(current_dir, "venv")
-        if os.path.isdir(possible_venv):
-            print(f"Trovata una cartella 'venv' in questa directory:\n{possible_venv}")
-            activate_path = os.path.join(possible_venv, "Scripts", "activate") if os.name == "nt" else os.path.join(possible_venv, "bin", "activate")
-            print(f"Puoi attivarlo con:\n{activate_path}")
-        else:
-            print("Nessun venv trovato nella cartella corrente. Puoi crearne uno con:\npython -m venv venv")
+def get_sudokus_from_web(url):
+    sudokus = []
+    resp = requests.get(url)
+    text = resp.text
+    print('Parsing web page...')
+    for line in text.splitlines():
+        line = line.strip()
+        if len(line) == 81 and all(c.isdigit() or c == '.' for c in line):
+            grid = sudoku_parser(line)
+            sudokus.append(grid)
+    return sudokus
 
 if __name__ == "__main__":
-    main()
+    url = "http://magictour.free.fr/top2365"
+    sudokus = get_sudokus_from_web(url)
+    print(f"Trovati {len(sudokus)} sudoku")
+
