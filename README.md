@@ -10,6 +10,8 @@ The project also includes:
 - a full experimental pipeline,
 - automatic plotting of performance metrics for both algorithms.
 
+Check the AI_homework.pdf for the methods description and comments on the results obtained
+
 ---
 
 ## How to Run
